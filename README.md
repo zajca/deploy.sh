@@ -13,9 +13,7 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
  * clean test
  * clean prod
 
-- [ ] a task list item
-- [x] completed
-
+##TODO:
 - [x] create structure
 - [x] update code
 - [x] build TODO: do more builds
