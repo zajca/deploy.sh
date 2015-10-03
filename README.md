@@ -20,7 +20,7 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [x] make release
 - [ ] create shared folders
 - [ ] create shared files
-- [ ] create writable folders
+- [x] create writable folders
 - [x] copy dirs between current and release
 - [ ] git caching
 - [x] clean

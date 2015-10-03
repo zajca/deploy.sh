@@ -73,7 +73,7 @@ if [ -d $this_release_path_test ]; then
   echo "test:removing failed release symlink: "$this_release_path_test
   rm $this_release_path_test
 fi
-ln -s $this_release_path_test_abolute $this_release_path_test
+ln -nfs $this_release_path_test_abolute $this_release_path_test
 echo "Test:this release path "$this_release_path_test
 
 ### Prepare git
@@ -102,8 +102,30 @@ cd $this_folder
 ## Install vendor
 echo "test:copy cached dirs"
 for dir in "${copy_dirs_test[@]}";do
-  cp -r "$current_test/${dir}" "$this_release_path_test"
+  cp -r $current_test"/"$dir $this_release_path_test
 done
+
+## Create writable dirs
+echo "test:create writable dirs"
+for dir in "${writable_dirs[@]}";do
+  if [ ! -d $this_release_path_test"/"$dir ]; then
+    echo "test:creating writable dir: "$this_release_path_test"/"$dir
+    mkdir -p $this_release_path_test"/"$dir
+  fi
+  # assuming that deploy and www-data share group
+  echo "test:making writable dir: "$this_release_path_test"/"$dir
+  chmod -R 770 $this_release_path_test"/"$dir
+
+  # another way make writable just directories rucursive
+  # find $this_release_path_test"/"$dir -type d -exec chmod 770 {} +
+
+  # another way using setfacl or chmod +a
+  # $server_user=$(ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
+  # chmod +a "$httpUser allow delete,write,append,file_inherit,directory_inherit" $this_release_path_test"/"$dir
+  # setfacl -R -m u:"$httpUser":rwX -m u:`whoami`:rwX $this_release_path_test"/"$dir
+  # setfacl -dR -m u:"$httpUser":rwX -m u:`whoami`:rwX $this_release_path_test"/"$dir
+done
+
 echo "test:build"
 #composer $composer_options
 # npm i
@@ -129,7 +151,7 @@ for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
   release=${releases_test[idx]}
   if [ $current_test != $release ];then
     echo "test:rollback to: "$release
-    ln -s $release $deploy_path_test"/rollback"
+    ln -nfs $release $deploy_path_test"/rollback"
     mv -T $deploy_path_test"/rollback" $deploy_path_test"/current"
     break;
   fi
