@@ -25,8 +25,8 @@ getServerUser(){
 # @param function string
 ##
 isDirectoryExists() {
-  if [ -d $deploy_path_test ]; then
-      eval $1
+  if [ -d $1 ]; then
+      eval $2
   fi
 }
 

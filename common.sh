@@ -28,23 +28,25 @@ copyDirs(){
 createSharedDirs(){
   msg "Create shared dirs"
   for dir in "${shared_dirs[@]}";do
-    isDirectoryExists "remove $this_release_path_test"/"$dir"
-    isDirectoryNotExists "createDir $deploy_path_test"/shared/"$dir"
-    symlink $deploy_path_test"/shared/"$dir $this_release_path_test"/"$dir
+    local full_dir=$deploy_path_test"/shared/"$dir
+    local release_full_dir=$deploy_path_test"/shared/"$dir
+    isDirectoryExists $release_full_dir "remove $release_full_dir"
+    isDirectoryNotExists $full_dir "createDir $full_dir"
+    symlink $full_dir $release_full_dir
   done
 }
 
 createSharedFiles(){
   msg "Create shared files"
   for file in "${shared_files[@]}";do
-    #TODO: refactor this
-    if [ -f $this_release_path_test"/"$file ]; then
-      remove $this_release_path_test"/"$file
+    local full_dir=$(dirname $deploy_path_test"/shared/"$file)
+    local release_full_file=$this_release_path_test"/"$file
+    if [ -f $release_full_file ]; then
+      remove $release_full_file
     fi
-    if [ ! -d $(dirname $deploy_path_test"/shared/"$file) ]; then
-      createDir $(dirname $deploy_path_test"/shared/"$file)
-    fi
-    symlink $deploy_path_test"/shared/"$file $this_release_path_test"/"$file
+
+    isDirectoryNotExists $full_dir "createDir $full_dir"
+    symlink $deploy_path_test"/shared/"$file $release_full_file
   done
 }
 
@@ -52,9 +54,7 @@ createWritableDirs(){
   ## Create writable dirs
   msg "Create writable dirs"
   for dir in "${writable_dirs[@]}";do
-    if [ ! -d $this_release_path_test"/"$dir ]; then
-      createDir $this_release_path_test"/"$dir
-    fi
+    isDirectoryNotExists $this_release_path_test"/"$dir "createDir $this_release_path_test/$dir"
     eval $1 $this_release_path_test"/"$dir
   done
 }
