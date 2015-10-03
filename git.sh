@@ -28,6 +28,11 @@ gitClone(){
   ret=$?
   if [ ! $ret -eq 0 ]; then
       git clone $git_clone_options_simple $this_release_path_test
+      ret=$?
+      if [ ! $ret -eq 0 ]; then
+        msg "Clone fails"
+        exit 1
+      fi
   fi
 }
 
