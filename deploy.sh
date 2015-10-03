@@ -53,10 +53,13 @@ gitClone
 gitGetCommitSinceLastRelease
 
 msgTop "Project-dirs"
+#just for testing to prevent fail
+createDir $current_test"/vendor"
+createDir $this_release_path_test"/web/media"
 ###Copy dirs
-copyDirs "${copy_dirs_test[@]}"
+copyDirs "${copy_dirs[@]}"
 createSharedDirs
-createSharedFiles
+# createSharedFiles
 createWritableDirs "permissionsChmod"
 
 #composer $composer_options

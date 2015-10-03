@@ -8,12 +8,10 @@ prepareStructure(){
   isDirectoryNotExists $this_release_path_test_abolute "createDir "$this_release_path_test_abolute
   export this_release_path_test=$deploy_path_test"/release"
   if [ -d $this_release_path_test ]; then
-    msg "removing failed release: "$(readlink $this_release_path_test)
-    rm -rf $(readlink $this_release_path_test)
-    msg "removing failed release symlink: "$this_release_path_test
-    rm $this_release_path_test
+    remove $(readlink $this_release_path_test)
+    remove $this_release_path_test
   fi
-  ln -nfs $this_release_path_test_abolute $this_release_path_test
+  symlink $this_release_path_test_abolute $this_release_path_test
   msg "This release path "$this_release_path_test
 
   ### create shared dir
@@ -30,12 +28,8 @@ copyDirs(){
 createSharedDirs(){
   msg "Create shared dirs"
   for dir in "${shared_dirs[@]}";do
-    if [ -d $this_release_path_test"/"$dir ]; then
-      remove $this_release_path_test"/"$dir
-    fi
-    if [ ! -d $deploy_path_test"/shared/"$dir ]; then
-      createDir $deploy_path_test"/shared/"$dir
-    fi
+    isDirectoryExists "remove $this_release_path_test"/"$dir"
+    isDirectoryNotExists "createDir $deploy_path_test"/shared/"$dir"
     symlink $deploy_path_test"/shared/"$dir $this_release_path_test"/"$dir
   done
 }
@@ -43,6 +37,7 @@ createSharedDirs(){
 createSharedFiles(){
   msg "Create shared files"
   for file in "${shared_files[@]}";do
+    #TODO: refactor this
     if [ -f $this_release_path_test"/"$file ]; then
       remove $this_release_path_test"/"$file
     fi

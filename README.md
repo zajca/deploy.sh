@@ -31,5 +31,6 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [ ] remote make release
 - [ ] rsync
 - [ ] refactoring
+- [ ] write more comments
 - [ ] code more optional, should be just invoking functions from imports
 - [ ] task for using remote test server

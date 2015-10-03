@@ -73,11 +73,19 @@ createDir() {
 copy() {
   msg "Copy from: "$1" to: "$2
   cp -r $1 $2
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
 
 atomicMove(){
   msg "Move atomic from: "$1" to:"$2
   mv -T $1 $2
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
 
 ##
@@ -87,6 +95,10 @@ atomicMove(){
 symlink() {
   msg "Symlink from: "$1" to: "$2
   ln -nfs $1 $2
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
 
 ###
@@ -95,6 +107,10 @@ symlink() {
 permissionsChmod() {
   msg "changing perm on: "$1" to: "$chmod_perm
   chmod -R $chmod_perm $1
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
 
 ###
@@ -103,6 +119,10 @@ permissionsChmod() {
 permissionsChmodA() {
   local $user $(getServerUser)
   chmod +a "$user allow delete,write,append,file_inherit,directory_inherit" $1
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
 
 ###
@@ -111,5 +131,13 @@ permissionsChmodA() {
 permissionsFacl() {
   local $user $(getServerUser)
   setfacl -R -m u:"$user":rwX -m u:`whoami`:rwX $1
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
   setfacl -dR -m u:"$user":rwX -m u:`whoami`:rwX $1
+  ret=$?
+  if [ ! $ret -eq 0 ]; then
+      exit 1
+  fi
 }
