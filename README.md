@@ -1,6 +1,7 @@
-#Deployer.sh
+#Deploy.sh
 Easy bash script for deploying on local and remote servers, inspired by deployer.php
 
+**Project not complete**
 *Now assuming that you have CI and test environment on same machine*
 
 ##Flow:
@@ -26,11 +27,11 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [x] git caching
 - [x] clean
 - [x] rollback
-- [ ] handle errors
+- [-] handle errors
 - [ ] remote create structure
 - [ ] remote make release
 - [ ] rsync
-- [ ] refactoring
+- [-] refactoring
 - [ ] write more comments
 - [ ] code more optional, should be just invoking functions from imports
 - [ ] task for using remote test server
