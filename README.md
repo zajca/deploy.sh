@@ -23,7 +23,7 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [x] create writable folders
 - [x] copy dirs between current and release
 - [x] git show last commits since current
-- [ ] git caching
+- [x] git caching
 - [x] clean
 - [x] rollback
 - [ ] handle errors
