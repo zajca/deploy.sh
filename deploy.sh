@@ -34,36 +34,43 @@ deploy_path_prod=$deploy_path_base$project_prod
 timestamp=$(date +%s)
 ###create project path
 if [ ! -d $deploy_path_test ]; then
+  echo "test:creating project dir"
   mkdir -p $deploy_path_test
 fi
 ###create releases dir
 if [ ! -d $deploy_path_test"/releases" ]; then
+  echo "test:creating releases dir"
   mkdir -p $deploy_path_test"/releases"
 fi
+
 ###read realeases
 releases_test=( $(find $deploy_path_test"/releases/" -maxdepth 1 -type d | sort -n) )
 # echo ${releases_test[0]}
 # echo ${releases_test[1]}
-echo "Test:existing releases"
+echo "test:existing releases:"
 printf '%s\n' "${releases_test[@]}"
 
 ###read current folder
 if [ -d "$deploy_path_test/current" ];then
   current_test=$(readlink $deploy_path_test"/current")
+  echo "test:current release path: "$current_test
+else
+  echo "test:no current release"
 fi
-echo "Test:current release path"
-echo $current_test
+
 
 ###create new release folder
 this_release_path_test_abolute=$deploy_path_test"/releases/"$timestamp
 if [ ! -d $this_release_path_test_abolute ]; then
+  echo "test:creating release folder: "$this_release_path_test_abolute
   mkdir -p $this_release_path_test_abolute
 fi
-echo "Test:this release path"
-echo $this_release_path_test_abolute
 this_release_path_test=$deploy_path_test"/release"
 
 if [ -d $this_release_path_test ]; then
+  echo "test:removing failed release: "$(readlink $this_release_path_test)
+  rm -rf $(readlink $this_release_path_test)
+  echo "test:removing failed release symlink: "$this_release_path_test
   rm $this_release_path_test
 fi
 ln -s $this_release_path_test_abolute $this_release_path_test
@@ -88,38 +95,49 @@ echo "git clone "$git_clone_options" "$this_release_path_test
 git clone $git_clone_options $this_release_path_test
 
 cd $this_release_path_test
+echo "Commits since current:"
 git log --since=$(basename $current_test)
 cd $this_folder
 
 ## Install vendor
-echo "test:copy"
+echo "test:copy cached dirs"
 for dir in "${copy_dirs_test[@]}";do
   cp -r "$current_test/${dir}" "$this_release_path_test"
 done
-echo "text:build"
+echo "test:build"
 #composer $composer_options
 # npm i
 # bower i
 # bower i
 
-echo "test:release"
+echo "test:release: mv -T "$this_release_path_test" "$deploy_path_test"/current"
 mv -T $this_release_path_test $deploy_path_test"/current"
+echo "test:new release path is: "$(readlink $deploy_path_test"/current")
+
 ## Clean up
 echo "test:cleaning up"
 for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
   release=${releases_test[idx]}
   if [ $idx -lt $((${#releases_test[@]}-$keep_releases+1)) ];then
-    echo "test:remove "$release
+    echo "test:remove: "$release
     rm -rf $release
   fi
 done
 
+echo "test:rollback"
+for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
+  release=${releases_test[idx]}
+  if [ $current_test != $release ];then
+    echo "test:rollback to: "$release
+    ln -s $release $deploy_path_test"/rollback"
+    mv -T $deploy_path_test"/rollback" $deploy_path_test"/current"
+    break;
+  fi
+done
 
 ## Remote
 # ssh ssh_string << EOF
+## put remote code here
 # EOF
 
-# rollback () {
-#
-# }
 echo "done"

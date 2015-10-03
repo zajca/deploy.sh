@@ -24,6 +24,7 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [x] copy dirs between current and release
 - [ ] git caching
 - [x] clean
+- [x] rollback
 - [ ] handle errors
 - [ ] remote create structure
 - [ ] remote make release
