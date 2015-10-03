@@ -25,7 +25,8 @@ branch="master"
 git_repository="git@github.com:deployphp/deployer.git"
 this_folder=$(pwd)
 
-
+#source init_variables
+#source lib
 ssh_string=$user"@"$server":$port"$deploy_path_base$project_prod
 deploy_path_test=$deploy_path_base_test$project_test
 deploy_path_prod=$deploy_path_base$project_prod
@@ -76,6 +77,12 @@ fi
 ln -nfs $this_release_path_test_abolute $this_release_path_test
 echo "Test:this release path "$this_release_path_test
 
+### create shared dir
+if [ ! -d $deploy_path_test"/shared" ]; then
+  echo "test:creating shared dir: "$deploy_path_test"/shared"
+  mkdir -p $deploy_path_test"/shared"
+fi
+
 ### Prepare git
 git_clone_options=$git_repository
 
@@ -105,6 +112,34 @@ for dir in "${copy_dirs_test[@]}";do
   cp -r $current_test"/"$dir $this_release_path_test
 done
 
+echo "test:create shared dirs"
+for dir in "${shared_dirs[@]}";do
+  if [ -d $this_release_path_test"/"$dir ]; then
+    echo "test:removing conflict shared dir from source: "$this_release_path_test"/"$dir
+    rm -rf $this_release_path_test"/"$dir
+  fi
+  if [ ! -d $deploy_path_test"/shared/"$dir ]; then
+    echo "test:creating shared dir: "$deploy_path_test"/shared/"$dir
+    mkdir -p $deploy_path_test"/shared/"$dir
+  fi
+  echo "test:creating shared dir symlink: "$this_release_path_test"/"$dir
+  ln -nfs $deploy_path_test"/shared/"$dir $this_release_path_test"/"$dir
+done
+
+echo "test:create shared files"
+for file in "${shared_files[@]}";do
+  if [ -f $this_release_path_test"/"$file ]; then
+    echo "test:removing conflict shared file from source: "$this_release_path_test"/"$file
+    rm -rf $this_release_path_test"/"$file
+  fi
+  if [ ! -d $(dirname $deploy_path_test"/shared/"$file) ]; then
+    echo "test:creating shared file directories: "$(dirname $deploy_path_test"/shared/"$file)
+    mkdir -p $(dirname $deploy_path_test"/shared/"$file)
+  fi
+  echo "test:creating shared file symlink: "$this_release_path_test"/"$file
+  ln -nfs $deploy_path_test"/shared/"$file $this_release_path_test"/"$file
+done
+
 ## Create writable dirs
 echo "test:create writable dirs"
 for dir in "${writable_dirs[@]}";do
@@ -130,7 +165,7 @@ echo "test:build"
 #composer $composer_options
 # npm i
 # bower i
-# bower i
+# npm run build
 
 echo "test:release: mv -T "$this_release_path_test" "$deploy_path_test"/current"
 mv -T $this_release_path_test $deploy_path_test"/current"
@@ -146,16 +181,16 @@ for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
   fi
 done
 
-echo "test:rollback"
-for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
-  release=${releases_test[idx]}
-  if [ $current_test != $release ];then
-    echo "test:rollback to: "$release
-    ln -nfs $release $deploy_path_test"/rollback"
-    mv -T $deploy_path_test"/rollback" $deploy_path_test"/current"
-    break;
-  fi
-done
+# echo "test:rollback"
+# for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
+#   release=${releases_test[idx]}
+#   if [ $current_test != $release ];then
+#     echo "test:rollback to: "$release
+#     ln -nfs $release $deploy_path_test"/rollback"
+#     mv -T $deploy_path_test"/rollback" $deploy_path_test"/current"
+#     break;
+#   fi
+# done
 
 ## Remote
 # ssh ssh_string << EOF

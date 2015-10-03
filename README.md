@@ -18,10 +18,11 @@ Easy bash script for deploying on local and remote servers, inspired by deployer
 - [x] update code
 - [x] build TODO: do more builds
 - [x] make release
-- [ ] create shared folders
-- [ ] create shared files
+- [x] create shared folders
+- [x] create shared files
 - [x] create writable folders
 - [x] copy dirs between current and release
+- [x] git show last commits since current
 - [ ] git caching
 - [x] clean
 - [x] rollback
