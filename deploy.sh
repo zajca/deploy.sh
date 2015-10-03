@@ -7,8 +7,8 @@ user="mycompany"
 id_rsa="~/.ssh/id_rsa"
 deploy_path_base="/var/www/"
 deploy_path_base_test="/var/www/"
-writable_dirs=('app/cache', 'app/logs', 'web/media')
-shared_dirs=('node_modules', 'web/media')
+writable_dirs=('app/cache' 'app/logs' 'web/media')
+shared_dirs=('node_modules' 'web/media')
 shared_files=('app/config/parameters.yml')
 copy_dirs=('vendor')
 assets=('web/assets', 'web/bundles')
@@ -17,7 +17,7 @@ assets=('web/assets', 'web/bundles')
 git_cache=true
 composer_options="install  --verbose --prefer-dist --optimize-autoloader --no-progress --no-interaction"
 keep_releases=3
-copy_dirs_test=("vendor","node_modules")
+copy_dirs_test=("vendor" "node_modules")
 copy_dirs=("vendor")
 timezone="UTC"
 tag=""
@@ -92,8 +92,10 @@ git log --since=$(basename $current_test)
 cd $this_folder
 
 ## Install vendor
-echo "text:copy vendor"
-# cp
+echo "test:copy"
+for dir in "${copy_dirs_test[@]}";do
+  cp -r "$current_test/${dir}" "$this_release_path_test"
+done
 echo "text:build"
 #composer $composer_options
 # npm i
