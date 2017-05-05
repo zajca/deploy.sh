@@ -1,37 +1,30 @@
 #Deploy.sh
-Easy bash script for deploying on local and remote servers, inspired by deployer.php
 
-**Project not complete**
-*Now assuming that you have CI and test environment on same machine*
+Project for prepare structure for zero downtime deploy of php applications.
 
-##Flow:
- * run script using CI
- * create test folders with timestamps
- * clone git and build
- * mv release to current
- * create prod folders with timestamps
- * rsync to remote server
- * clean test
- * clean prod
+simple use (symfony)
+```
+$sh deploy.sh deploy \
+    --project_dir /var/www/app \
+    --project_tar /tmp/release.tgz \
+    --copy-dirs '' \
+    --writable_dirs 'var/cache,var/logs,var/sessions' \
+    --shared_dirs 'web/uploads' \
+    --keep_releases 3
+```
 
-##TODO:
-- [x] create structure
-- [x] update code
-- [x] build TODO: do more builds
-- [x] make release
-- [x] create shared folders
-- [x] create shared files
-- [x] create writable folders
-- [x] copy dirs between current and release
-- [x] git show last commits since current
-- [x] git caching
-- [x] clean
-- [x] rollback
-- [x] handle errors
-- [ ] remote create structure
-- [ ] remote make release
-- [ ] rsync
-- [ ] refactoring
-- [ ] write more comments
-- [ ] code more optional, should be just invoking functions from imports
-- [ ] task for using remote test server
+```
+Actions:
+    deploy     Deploy app from tar
+    rollback   Rollback to previous release
+    clean-up   Clean up old releases
+
+  Options:
+    --project_tar   (required)  absolute path to project *.tgz dile
+    --project_dir   (required)  absolute path to project dir
+    --writable_dirs (optional)  array of relative dirs to make writable 'var/log,var/cache'
+    --shared_dirs   (optional)  array of relative dirs to make shared 'var/log,var/cache'
+    --shared_files  (optional)  array of relative files to symlink 'var/log,var/cache'
+    --copy_dirs     (optional)  array of relative dirs to copy
+    --keep_releases (optional)  number of release folders to keep
+```

@@ -1,35 +1,41 @@
+untarProject(){
+  msg "Extracting project"
+  tar zxf $project_tar -C $this_release_path
+}
+
 prepareStructure(){
   ###create project dir
-  isDirectoryNotExists $deploy_path_test "createDir "$deploy_path_test
+  isDirectoryNotExists $project_dir "createDir "$project_dir
   ###create releases dir
-  isDirectoryNotExists $deploy_path_test"/releases" "createDir "$deploy_path_test"/releases"
+  isDirectoryNotExists $project_dir"/releases" "createDir "$project_dir"/releases"
 
   ###create new release folder
-  isDirectoryNotExists $this_release_path_test_abolute "createDir "$this_release_path_test_abolute
-  export this_release_path_test=$deploy_path_test"/release"
-  if [ -d $this_release_path_test ]; then
-    remove $(readlink $this_release_path_test)
-    remove $this_release_path_test
+  isDirectoryNotExists $this_release_path "createDir "$this_release_path
+  export this_release_path_temp=$project_dir"/release"
+  if [ -d $this_release_path_temp ]; then
+    remove $(readlink $this_release_path_temp)
+    remove $this_release_path_temp
   fi
-  symlink $this_release_path_test_abolute $this_release_path_test
-  msg "This release path "$this_release_path_test
+  symlink $this_release_path $this_release_path_temp
 
   ### create shared dir
-  isDirectoryNotExists $deploy_path_test"/shared" "createDir "$deploy_path_test"/shared"
+  isDirectoryNotExists $project_dir"/shared" "createDir "$project_dir"/shared"
 }
 
 copyDirs(){
-  local_array=("${@}")
-  for dir in "${local_array[@]}";do
-    copy $current_test"/"$dir $this_release_path_test
-  done
+  if [ -d "$project_dir/current" ];then
+        local_array=("${@}")
+        for dir in "${local_array[@]}";do
+            copy $current_dir"/"$dir $this_release_path_temp
+        done
+  fi
 }
 
 createSharedDirs(){
   msg "Create shared dirs"
   for dir in "${shared_dirs[@]}";do
-    local full_dir=$deploy_path_test"/shared/"$dir
-    local release_full_dir=$deploy_path_test"/shared/"$dir
+    local full_dir=$project_dir"/shared/"$dir
+    local release_full_dir=$this_release_path"/"$dir
     isDirectoryExists $release_full_dir "remove $release_full_dir"
     isDirectoryNotExists $full_dir "createDir $full_dir"
     symlink $full_dir $release_full_dir
@@ -39,14 +45,14 @@ createSharedDirs(){
 createSharedFiles(){
   msg "Create shared files"
   for file in "${shared_files[@]}";do
-    local full_dir=$(dirname $deploy_path_test"/shared/"$file)
-    local release_full_file=$this_release_path_test"/"$file
+    local full_dir=$(dirname $project_dir"/shared/"$file)
+    local release_full_file=$this_release_path_temp"/"$file
     if [ -f $release_full_file ]; then
       remove $release_full_file
     fi
 
     isDirectoryNotExists $full_dir "createDir $full_dir"
-    symlink $deploy_path_test"/shared/"$file $release_full_file
+    symlink $project_dir"/shared/"$file $release_full_file
   done
 }
 
@@ -54,22 +60,22 @@ createWritableDirs(){
   ## Create writable dirs
   msg "Create writable dirs"
   for dir in "${writable_dirs[@]}";do
-    isDirectoryNotExists $this_release_path_test"/"$dir "createDir $this_release_path_test/$dir"
-    eval $1 $this_release_path_test"/"$dir
+    isDirectoryNotExists $this_release_path_temp"/"$dir "createDir $this_release_path_temp/$dir"
+    eval $1 $this_release_path_temp"/"$dir
   done
 }
 
 release() {
   msgTop "Release"
-  atomicMove $this_release_path_test $deploy_path_test"/current"
-  msg "New release path is: "$(readlink $deploy_path_test"/current")
+  atomicMove $this_release_path_temp "$project_dir/current"
+  msg "New release path is: "$(readlink "$project_dir/current")
 }
 
 cleanUp(){
   msgTop "Clean Up"
-  for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
-    local release=${releases_test[idx]}
-    if [ $idx -lt $((${#releases_test[@]}-$keep_releases+1)) ];then
+  for (( idx=${#previous_releases[@]}-1 ; idx>=1 ; idx-- ));do
+    local release=${previous_releases[idx]}
+    if [ $idx -lt $((${#previous_releases[@]}-$keep_releases+1)) ];then
       remove $release
     fi
   done
@@ -77,12 +83,12 @@ cleanUp(){
 
 rollback() {
   msgTop "Rollback"
-  for (( idx=${#releases_test[@]}-1 ; idx>=1 ; idx-- ));do
-    release=${releases_test[idx]}
-    if [ $current_test != $release ];then
+  for (( idx=${#previous_releases[@]}-1 ; idx>=1 ; idx-- ));do
+    release=${previous_releases[idx]}
+    if [ $current_dir != $release ];then
       msg "Rollback to: "$release
-      symlink $release $deploy_path_test"/rollback"
-      atomicMove $deploy_path_test"/rollback" $deploy_path_test"/current"
+      symlink $release $project_dir"/rollback"
+      atomicMove $project_dir"/rollback" $current_dir
       break;
     fi
   done
