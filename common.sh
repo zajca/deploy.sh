@@ -88,7 +88,7 @@ rollback() {
     if [ $current_dir != $release ];then
       msg "Rollback to: "$release
       symlink $release $project_dir"/rollback"
-      atomicMove $project_dir"/rollback" $current_dir
+      atomicMove $project_dir"/rollback" $project_dir"/current"
       break;
     fi
   done

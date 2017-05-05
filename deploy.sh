@@ -86,6 +86,8 @@ case "$action" in
     ;;
 
     rollback)
+    exportReleases
+    exportCurrentRelease
     rollback
     ;;
 

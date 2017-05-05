@@ -20,7 +20,7 @@ Actions:
     clean-up   Clean up old releases
 
   Options:
-    --project_tar   (required)  absolute path to project *.tgz dile
+    --project_tar   (required)  absolute path to project *.tgz file
     --project_dir   (required)  absolute path to project dir
     --writable_dirs (optional)  array of relative dirs to make writable 'var/log,var/cache'
     --shared_dirs   (optional)  array of relative dirs to make shared 'var/log,var/cache'
