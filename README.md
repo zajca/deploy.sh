@@ -5,17 +5,27 @@ Simple bash php application deployment framework.
 ##Structure
 
 ###lib.sh
+
 Simple function which wraps bash commands
+
 ###vars.sh
+
 Variables export for project
+
 ###common.sh
+
 Common deployment tasks
+
 ###init.sh
+
 Inits framework variables and reads arguments
+
 ###commands.sh
+
 Commands run and help menu
 
 ##Usage & Customization
+
 Best use would be place repository on your server and write your own deploy.sh command.
 
 Simple example of deploy.sh configuration is `deploy.sh` file.
@@ -26,6 +36,7 @@ You can add your own commands writing your own `commands.sh` file.
 
  
 ###simple use (symfony)
+
 ```
 $sh deploy.sh deploy \
     --project_dir /var/www/app \
@@ -37,6 +48,7 @@ $sh deploy.sh deploy \
 ```
 
 ###HELP
+
 ```
 Actions:
     deploy     Deploy app from tar
@@ -54,6 +66,7 @@ Actions:
 ```
 
 ##Workflow
+
 in `project_dir` is created structure
 
 ```
@@ -67,6 +80,7 @@ shared - directories shared accross deployments
 -  `release` folder is atomically changed for `current` folder (`mv -T` is used)
 
 ##TODO
+
 * [ ] Clean opcache
 
 
