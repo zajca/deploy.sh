@@ -1,5 +1,5 @@
 untarProject(){
-  msg "Extracting project"
+  msgTop "Extracting project"
   tar zxf $project_tar -C $this_release_path
 }
 
