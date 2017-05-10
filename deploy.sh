@@ -26,6 +26,9 @@ deployAction(){
     migrateDB
 
     release
+
+    clearOpCache
+
     cleanUp
 }
 
