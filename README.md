@@ -1,30 +1,30 @@
-#Deploy.sh
+# Deploy.sh
 
 Simple bash php application deployment framework.
 
-##Structure
+## Structure
 
-###lib.sh
+### lib.sh
 
 Simple function which wraps bash commands
 
-###vars.sh
+### vars.sh
 
 Variables export for project
 
-###common.sh
+### common.sh
 
 Common deployment tasks
 
-###init.sh
+### init.sh
 
 Inits framework variables and reads arguments
 
-###commands.sh
+### commands.sh
 
 Commands run and help menu
 
-##Usage & Customization
+## Usage & Customization
 
 Best use would be place repository on your server and write your own deploy.sh command.
 
@@ -35,7 +35,7 @@ Basic configuration uses 3 commands `deploy`, `rollback` and`clean-up`
 You can add your own commands writing your own `commands.sh` file.
 
  
-###simple use (symfony)
+### simple use (symfony)
 
 ```
 $sh deploy.sh deploy \
@@ -47,7 +47,7 @@ $sh deploy.sh deploy \
     --keep_releases 3
 ```
 
-###HELP
+### HELP
 
 ```
 Actions:
@@ -65,7 +65,7 @@ Actions:
     --keep_releases (optional)  number of release folders to keep
 ```
 
-##Workflow
+## Workflow
 
 in `project_dir` is created structure
 
@@ -79,7 +79,7 @@ shared - directories shared accross deployments
 -  deploy tasks like copy directories set shared directories or setting permissions is done, this is place where you most probably want to add your own logic.
 -  `release` folder is atomically changed for `current` folder (`mv -T` is used)
 
-##TODO
+## TODO
 
 * [ ] Clean opcache
 
