@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./lib.sh
+source "${BASH_SOURCE%/*}/lib.sh"
 
 ##INIT VARS
 writable_dirs=()
@@ -17,6 +17,18 @@ shift
 parse_args() {
     while [[ $# > 0 ]] ; do
       case "$1" in
+        --project_remote)
+          export project_remote=${2}
+          shift
+          ;;
+        --env_file)
+          export env_file=${2}
+          shift
+          ;;
+        --clear_cache_url)
+          export clear_cache_url=${2}
+          shift
+          ;;
         --project_tar)
           export project_tar=${2}
           shift
@@ -47,11 +59,14 @@ parse_args() {
     done
 }
 
-parse_args "$@"
+tmp_copy=("${@}")
+export ARGS="${tmp_copy[*]}"
+
+parse_args $ARGS
 
 #source init_variables
-source ./lib.sh
-source ./vars.sh
-source ./common.sh
+source "${BASH_SOURCE%/*}/lib.sh"
+source "${BASH_SOURCE%/*}/vars.sh"
+source "${BASH_SOURCE%/*}/common.sh"
 
 initVars

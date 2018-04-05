@@ -16,6 +16,12 @@ getServerUser(){
   echo $(ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1)
 }
 
+run_eval() {
+    if ! eval "$@"; then
+        exit 1
+    fi
+}
+
 ###
 # Files
 ###
@@ -38,6 +44,30 @@ isDirectoryNotExists() {
   if [ ! -d $1 ]; then
       eval $2
   fi
+}
+
+##
+# @param directory
+# @param function string
+##
+isSymlink() {
+    if [[ -L $1 && -d $1 ]]
+    then
+        msg $1" is symlink"
+        eval $2
+    fi
+}
+
+##
+# @param directory
+# @param function string
+##
+isNotSymlink() {
+    if [ ! -L $1 ]
+    then
+        msg $1" is not symlink"
+        eval $2
+    fi
 }
 
 ##

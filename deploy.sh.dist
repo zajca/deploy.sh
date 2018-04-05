@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# THIS IS DIST FILE SHOULD BE MODIFIED AND COPIED SOMEWHERE ELSE
+#
+set +e
+source "${BASH_SOURCE%/*}/init.sh"
+source "${BASH_SOURCE%/*}/symfony.sh"
+
+parseMoreParams(){
+    while [[ $# > 0 ]] ; do
+      case "$1" in
+        --ci_token)
+          export ci_token=${2}
+          shift
+          ;;
+      esac
+      shift
+    done
+}
+
+deployAction(){
+    msgTop "Prepare directory structure"
+    prepareStructure
+
+    parseMoreParams $ARGS
+
+    msgTop "Downloading project"
+    cd $this_release_path && { curl -L --header "PRIVATE-TOKEN: "$ci_token $project_remote > release.zip; cd -; }
+
+    msgTop "Extracting project"
+    unzip -q $this_release_path/release.zip -d $this_release_path
+
+    createWritableDirs "permissionsChmod"
+
+    ####export and print current releases
+    exportReleases
+    ##read current folder
+    exportCurrentRelease
+
+    msgTop "Project dirs"
+    ####Copy dirs
+    copyDirs "${copy_dirs[@]}"
+    createSharedDirs
+    createSharedFiles
+    copyParameters
+
+    #symfony
+    cleanCache
+    migrateDB
+
+    release
+
+    cleanOPCacheFromUrl
+
+    cleanUp
+}
+
+rollbackAction(){
+    exportReleases
+    exportCurrentRelease
+    rollback
+}
+
+cleanUpAction(){
+    cleanUp
+}
+
+source "${BASH_SOURCE%/*}/commands.sh"
