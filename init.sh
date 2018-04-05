@@ -60,9 +60,9 @@ parse_args() {
 }
 
 tmp_copy=("${@}")
-export ARGS="${tmp_copy[*]}"
+export ARGS="${tmp_copy[@]}"
 
-parse_args $ARGS
+parse_args "$@"
 
 #source init_variables
 source "${BASH_SOURCE%/*}/lib.sh"
