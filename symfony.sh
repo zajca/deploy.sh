@@ -7,7 +7,8 @@ cleanCache(){
 
 cleanOPCacheFromUrl(){
     msg "Clearing OP cache"
-    curl -sS $clear_cache_url;
+    msg "calling command: curl -vS "$clear_cache_url
+    curl -vS $clear_cache_url
 }
 
 warmupCache(){

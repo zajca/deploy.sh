@@ -15,7 +15,7 @@ export action=$1
 shift
 
 parse_args() {
-    while [[ $# > 0 ]] ; do
+    while [[ "$#" > 0 ]] ; do
       case "$1" in
         --project_remote)
           export project_remote=${2}
@@ -26,7 +26,7 @@ parse_args() {
           shift
           ;;
         --clear_cache_url)
-          export clear_cache_url=${2}
+          export clear_cache_url="$2"
           shift
           ;;
         --project_tar)
