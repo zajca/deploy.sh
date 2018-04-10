@@ -37,7 +37,7 @@ createSharedDirs(){
     local full_dir=$project_dir"/shared/"$dir
     local release_full_dir=$this_release_path"/"$dir
     isNotSymlink $release_full_dir "remove $release_full_dir"
-    isNotSymlink $full_dir "createDir $full_dir"
+    isDirectoryNotExists $full_dir "createDir $full_dir"
     symlink $full_dir $release_full_dir
   done
 }
